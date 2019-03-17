@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -12,6 +13,9 @@ public class PlayerController : MonoBehaviour
 	[SerializeField] private float maximumY = 80;
 	[SerializeField] private float fallingSpeedDeath = 100;
 	[SerializeField] private Transform myCamera = null;
+	[SerializeField] private GameObject decalPrefab = null;
+	[SerializeField] private float maxDistanceDraw = 3.0f;
+	[SerializeField] private LayerMask drawLayer = 0;
 
 	private float _horizontalInput;
 	private float _verticalInput;
@@ -59,6 +63,21 @@ public class PlayerController : MonoBehaviour
 			{
 				_dieOnImpact = true;
 			}
+
+			//checks for decal
+			//code from youtube.com/watch?v=VKP9APfsRAk
+			//todo change that input by something cleaner
+			if (Input.GetMouseButtonDown(0))
+			{
+				RaycastHit hit;
+				if (Physics.Raycast(myCamera.position, myCamera.forward, out hit, maxDistanceDraw, drawLayer))
+				{
+					var decal = Instantiate(decalPrefab, hit.transform);
+					decal.transform.position = hit.point;
+					decal.transform.forward = hit.normal * -1f;
+					decal.transform.Rotate(0, 0, Random.Range(0, 360));
+				}
+			}
 		}
 	}
 
@@ -83,8 +102,7 @@ public class PlayerController : MonoBehaviour
 		if (_isAlive)
 		{
 			_isAlive = false;
-			Debug.Log("Death of the player");
-			//todo implement actual death here
+			GameManager.Instance.ReloadCurrentScene();
 		}
 	}
 }

@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
 	[SerializeField] private float fadeInTimescaleTime = 0.1f;
 	public static GameManager Instance { get; private set; }
 	private Coroutine _timeScaleCoroutine;
+	private UIManager _uiManager;
 	private PlayerController _player;
 	public PlayerController Player => _player;
 	private bool _fadeOutToBlack = false;
@@ -44,7 +45,7 @@ public class GameManager : MonoBehaviour
 		Setup();
 		if (_fadeOutToBlack)
 		{
-			//UIManager.FadeToBlack(false);
+			_uiManager.FadeToBlack(false);
 			_fadeOutToBlack = false;
 		}
 	}
@@ -54,6 +55,7 @@ public class GameManager : MonoBehaviour
 		//alternative way to get elements. cons : if there is no element with such tag it creates an error
 		//_player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
 		_player = FindObjectOfType<PlayerController>();
+		_uiManager = FindObjectOfType<UIManager>();
 	}
 
 	private void Awake()
@@ -79,7 +81,7 @@ public class GameManager : MonoBehaviour
 
 	public void LoadLevelFadeInAndOut(string nameLevel)
 	{
-		//UIManager.FadeToBlack(true);
+		_uiManager.FadeToBlack(true);
 		_fadeOutToBlack = true;
 		StartCoroutine(LoadingLevel(nameLevel));
 	}
@@ -89,7 +91,7 @@ public class GameManager : MonoBehaviour
 		if (fadeInToBlack)
 		{
 			//_player.StopMoving();
-			//_uiManager.FadeToBlack(true);
+			_uiManager.FadeToBlack(true);
 			StartCoroutine(LoadingLevel(nameLevel));
 		}
 		else
@@ -141,11 +143,10 @@ public class GameManager : MonoBehaviour
 
 	private IEnumerator QuittingGame()
 	{
-		/*while (UIManager.IsFadingToBlack)
+		while (_uiManager.IsFadingToBlack)
 		{
 			yield return null;
-		}*/
-		yield return null;
+		}
 #if UNITY_EDITOR
 		UnityEditor.EditorApplication.isPlaying = false;
 #else
@@ -153,12 +154,17 @@ public class GameManager : MonoBehaviour
 #endif
 	}
 
+	public void ReloadCurrentScene()
+	{
+		LoadLevel(SceneManager.GetActiveScene().name, true, true);
+	}
+
 	public void QuitGame()
 	{
 		if (!_isQuitting)
 		{
 			_isQuitting = true;
-			//_uiManager.FadeToBlack(true);
+			_uiManager.FadeToBlack(true);
 			StartCoroutine(QuittingGame());
 		}
 	}

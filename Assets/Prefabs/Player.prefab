@@ -91,7 +91,7 @@ GameObject:
   - component: {fileID: 1918690974}
   - component: {fileID: 1918690973}
   - component: {fileID: 1918690972}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -227,7 +227,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 75
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -309,6 +309,12 @@ MonoBehaviour:
   maximumY: 80
   fallingSpeedDeath: 20
   myCamera: {fileID: 1983647923575648027}
+  decalPrefab: {fileID: 988972305955814239, guid: f502b06799eb82548ae2e54b69ec30f3,
+    type: 3}
+  maxDistanceDraw: 3
+  drawLayer:
+    serializedVersion: 2
+    m_Bits: 1
 --- !u!54 &1983647923860266341
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -346,7 +352,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.25
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
       propertyPath: m_LocalRotation.x
