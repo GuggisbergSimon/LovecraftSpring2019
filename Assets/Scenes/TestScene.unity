@@ -22155,18 +22155,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 513059776, guid: 1c11c45e3ce9c1f45b535f443228c5dc, type: 3}
-      propertyPath: m_Name
-      value: Compass
-      objectReference: {fileID: 0}
-    - target: {fileID: 1583155687, guid: 1c11c45e3ce9c1f45b535f443228c5dc, type: 3}
-      propertyPath: m_Name
-      value: compass Sprite
-      objectReference: {fileID: 0}
-    - target: {fileID: 1767972898, guid: 1c11c45e3ce9c1f45b535f443228c5dc, type: 3}
-      propertyPath: m_Name
-      value: pointer Sprite
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1c11c45e3ce9c1f45b535f443228c5dc, type: 3}
 --- !u!4 &2424058070744724453 stripped

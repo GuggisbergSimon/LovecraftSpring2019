@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 513059777}
   - component: {fileID: 513059779}
   m_Layer: 0
-  m_Name: pointer
+  m_Name: Compass
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 1583155688}
   - component: {fileID: 1583155689}
   m_Layer: 0
-  m_Name: compass
+  m_Name: compass Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -214,7 +214,7 @@ GameObject:
   - component: {fileID: 1767972899}
   - component: {fileID: 1767972900}
   m_Layer: 0
-  m_Name: pointer
+  m_Name: pointer Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -511,7 +511,7 @@ MonoBehaviour:
   sensitivityY: 3
   minimumY: -85
   maximumY: 80
-  fallingSpeedDeath: 5
+  fallingSpeedDeath: 20
   myCamera: {fileID: 1983647923575648027}
   decalPrefab: {fileID: 988972305955814239, guid: f502b06799eb82548ae2e54b69ec30f3,
     type: 3}
