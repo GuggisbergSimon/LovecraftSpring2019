@@ -28,12 +28,10 @@ public class UIManager : MonoBehaviour
 		//blackPanel.gameObject.SetActive(true);
 		float timer = 0.0f;
 		Color tempColor = blackPanel.color;
-		Debug.Log(tempColor.ToString());
 		while (timer < time)
 		{
 			timer += Time.unscaledDeltaTime;
 			tempColor.a = Mathf.Lerp(value ? 0.0f : 1.0f, value ? 1.0f : 0.0f, timer / time);
-			Debug.Log(tempColor.ToString());
 			blackPanel.color = tempColor;
 			yield return null;
 		}
