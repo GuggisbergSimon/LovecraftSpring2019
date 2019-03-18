@@ -10,16 +10,11 @@ public class GameManager : MonoBehaviour
 	public static GameManager Instance { get; private set; }
 	private Coroutine _timeScaleCoroutine;
 	private UIManager _uiManager;
+	public UIManager UIManager => _uiManager;
 	private PlayerController _player;
 	public PlayerController Player => _player;
 	private bool _fadeOutToBlack = false;
 	private bool _isQuitting;
-
-	public bool FadeOutToBlack
-	{
-		get => _fadeOutToBlack;
-		set => _fadeOutToBlack = value;
-	}
 
 	private void OnEnable()
 	{
@@ -104,11 +99,11 @@ public class GameManager : MonoBehaviour
 
 	private IEnumerator LoadingLevel(string nameLevel)
 	{
-		/*while (UIManager.IsFadingToBlack)
+		while (_uiManager.IsFadingToBlack)
 		{
 			yield return null;
-		}*/
-		yield return null;
+		}
+
 		LoadLevel(nameLevel);
 	}
 

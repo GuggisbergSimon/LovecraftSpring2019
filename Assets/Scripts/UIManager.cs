@@ -15,12 +15,6 @@ public class UIManager : MonoBehaviour
 	private Message _currentMessage;
 	private bool _isFadingToBlack;
 	public bool IsFadingToBlack => _isFadingToBlack;
-
-	public float FadingToBlackTime
-	{
-		get => fadingToBlackTime;
-		set => fadingToBlackTime = value;
-	}
 	
 
 	public void FadeToBlack(bool value)
@@ -31,18 +25,20 @@ public class UIManager : MonoBehaviour
 	private IEnumerator FadingToBlack(bool value, float time)
 	{
 		_isFadingToBlack = true;
-		blackPanel.gameObject.SetActive(true);
+		//blackPanel.gameObject.SetActive(true);
 		float timer = 0.0f;
 		Color tempColor = blackPanel.color;
+		Debug.Log(tempColor.ToString());
 		while (timer < time)
 		{
 			timer += Time.unscaledDeltaTime;
 			tempColor.a = Mathf.Lerp(value ? 0.0f : 1.0f, value ? 1.0f : 0.0f, timer / time);
+			Debug.Log(tempColor.ToString());
 			blackPanel.color = tempColor;
 			yield return null;
 		}
 
-		blackPanel.gameObject.SetActive(value);
+		//blackPanel.gameObject.SetActive(value);
 		_isFadingToBlack = false;
 	}
 
