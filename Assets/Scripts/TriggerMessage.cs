@@ -9,8 +9,7 @@ public class TriggerMessage : MonoBehaviour
 
 	private void OnTriggerEnter(Collider other)
 	{
-		//todo add check for player (?)
-		if (!_isRead)
+		if (!_isRead && other.CompareTag("Player"))
 		{
 			GameManager.Instance.UIManager.PrintMessage(message);
 			if (message.maxTimeOnScreen > 0)
@@ -31,8 +30,10 @@ public class TriggerMessage : MonoBehaviour
 
 	private void OnTriggerExit(Collider other)
 	{
-		//todo add check for player (?)
-		CloseMessage();
+		if (other.CompareTag("Player"))
+		{
+			CloseMessage();
+		}
 	}
 
 	private void CloseMessage()

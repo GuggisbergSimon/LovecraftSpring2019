@@ -15,7 +15,9 @@ public class PlayerController : MonoBehaviour
 	[SerializeField] private Transform myCamera = null;
 	[SerializeField] private GameObject decalPrefab = null;
 	[SerializeField] private float maxDistanceDraw = 3.0f;
+	[SerializeField] private float maxDistanceInteract = 5.0f;
 	[SerializeField] private LayerMask drawLayer = 0;
+	[SerializeField] private LayerMask interactibleLayer = 0;
 
 	private float _horizontalInput;
 	private float _verticalInput;
@@ -25,6 +27,7 @@ public class PlayerController : MonoBehaviour
 	private float rotationY = 0.0f;
 	private bool _isAlive = true;
 	private bool _dieOnImpact;
+	private bool _isReading;
 
 	private void Start()
 	{
@@ -36,16 +39,17 @@ public class PlayerController : MonoBehaviour
 	{
 		if (_isAlive)
 		{
+			Debug.Log(Input.GetAxis("Mouse X")+ " "+ Input.GetAxis("Mouse Y"));
 			//handles moving inputs
 			_horizontalInput = Input.GetAxis("Horizontal");
 			_verticalInput = Input.GetAxis("Vertical");
 
 			//handles sprint inputs
-			if (Input.GetButtonDown("Fire1") && _canSprint)
+			if (Input.GetButtonDown("Sprint") && _canSprint)
 			{
 				_actualSpeed = sprintSpeed;
 			}
-			else if (Input.GetButtonUp("Fire1"))
+			else if (Input.GetButtonUp("Sprint"))
 			{
 				_actualSpeed = moveSpeed;
 			}
@@ -66,8 +70,7 @@ public class PlayerController : MonoBehaviour
 
 			//checks for decal
 			//code from youtube.com/watch?v=VKP9APfsRAk
-			//todo change that input by something cleaner
-			if (Input.GetMouseButtonDown(0))
+			if (Input.GetButtonDown("Mark"))
 			{
 				RaycastHit hit;
 				if (Physics.Raycast(myCamera.position, myCamera.forward, out hit, maxDistanceDraw, drawLayer))
@@ -77,6 +80,26 @@ public class PlayerController : MonoBehaviour
 					decal.transform.forward = hit.normal * -1f;
 					decal.transform.Rotate(0, 0, Random.Range(0, 360));
 				}
+			}
+			//handles interaction with items
+			else if (Input.GetButtonDown("Interact"))
+			{
+				RaycastHit hit;
+				if (Physics.Raycast(myCamera.position, myCamera.forward, out hit, maxDistanceInteract,
+					interactibleLayer))
+				{
+					hit.transform.GetComponent<Interactive>().Interact();
+					if (hit.transform.CompareTag("Message"))
+					{
+						_isReading = !_isReading;
+					}
+				}
+			}
+
+			//handles closing of message boxes when moving inputs received
+			if ((_horizontalInput.CompareTo(0) != 0 || _verticalInput.CompareTo(0) != 0) && _isReading)
+			{
+				GameManager.Instance.UIManager.CloseMessage();
 			}
 		}
 	}
