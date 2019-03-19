@@ -27,7 +27,6 @@ public class PlayerController : MonoBehaviour
 	private float rotationY = 0.0f;
 	private bool _isAlive = true;
 	private bool _dieOnImpact;
-	//private bool _isReading;
 
 	private void Start()
 	{
@@ -88,18 +87,8 @@ public class PlayerController : MonoBehaviour
 					interactibleLayer))
 				{
 					hit.transform.GetComponent<Interactive>().Interact();
-					/*if (hit.transform.CompareTag("Message"))
-					{
-						_isReading = !_isReading;
-					}*/
 				}
 			}
-
-			//handles closing of message boxes when moving inputs received
-			/*if ((_horizontalInput.CompareTo(0) != 0 || _verticalInput.CompareTo(0) != 0) && _isReading)
-			{
-				GameManager.Instance.UIManager.CloseMessage();
-			}*/
 		}
 	}
 

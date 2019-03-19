@@ -7,7 +7,6 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
 	[SerializeField] private float fadeInTimescaleTime = 0.1f;
-	[SerializeField] private int numberNotesRequired = 3;
 	public static GameManager Instance { get; private set; }
 	private Coroutine _timeScaleCoroutine;
 	private UIManager _uiManager;
@@ -16,6 +15,7 @@ public class GameManager : MonoBehaviour
 	public PlayerController Player => _player;
 	private bool _fadeOutToBlack = false;
 	private bool _isQuitting;
+	private int _numberNotesRequired;
 	private int _currentNumberNotes;
 
 	public int CurrentNumberNotes
@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
 		set
 		{
 			_currentNumberNotes = value;
-			if (_currentNumberNotes >= numberNotesRequired)
+			if (_currentNumberNotes >= _numberNotesRequired)
 			{
 				LoadLevelFadeInAndOut("WinScene");
 			}
@@ -65,6 +65,7 @@ public class GameManager : MonoBehaviour
 		//alternative way to get elements. cons : if there is no element with such tag it creates an error
 		//_player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
 		_player = FindObjectOfType<PlayerController>();
+		_numberNotesRequired = FindObjectsOfType<PickUpNote>().Length;
 		_uiManager = FindObjectOfType<UIManager>();
 	}
 
