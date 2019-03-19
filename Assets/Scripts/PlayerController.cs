@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour
 	private float rotationY = 0.0f;
 	private bool _isAlive = true;
 	private bool _dieOnImpact;
-	private bool _isReading;
+	//private bool _isReading;
 
 	private void Start()
 	{
@@ -39,7 +39,6 @@ public class PlayerController : MonoBehaviour
 	{
 		if (_isAlive)
 		{
-			Debug.Log(Input.GetAxis("Mouse X")+ " "+ Input.GetAxis("Mouse Y"));
 			//handles moving inputs
 			_horizontalInput = Input.GetAxis("Horizontal");
 			_verticalInput = Input.GetAxis("Vertical");
@@ -89,18 +88,18 @@ public class PlayerController : MonoBehaviour
 					interactibleLayer))
 				{
 					hit.transform.GetComponent<Interactive>().Interact();
-					if (hit.transform.CompareTag("Message"))
+					/*if (hit.transform.CompareTag("Message"))
 					{
 						_isReading = !_isReading;
-					}
+					}*/
 				}
 			}
 
 			//handles closing of message boxes when moving inputs received
-			if ((_horizontalInput.CompareTo(0) != 0 || _verticalInput.CompareTo(0) != 0) && _isReading)
+			/*if ((_horizontalInput.CompareTo(0) != 0 || _verticalInput.CompareTo(0) != 0) && _isReading)
 			{
 				GameManager.Instance.UIManager.CloseMessage();
-			}
+			}*/
 		}
 	}
 

@@ -8,9 +8,11 @@ public class PickUpNote : Interactive
 	[SerializeField] private Message noPickUpMessage = null;
 	[SerializeField] private GameObject modelToHide = null;
 	private bool _isPicked;
+	private bool _isReading;
 
 	public override void Interact()
 	{
+		_isReading = true;
 		if (!_isPicked)
 		{
 			_isPicked = true;
@@ -21,6 +23,15 @@ public class PickUpNote : Interactive
 		else
 		{
 			GameManager.Instance.UIManager.PrintMessage(noPickUpMessage);
+		}
+	}
+
+	private void OnTriggerExit(Collider other)
+	{
+		if (_isReading && other.CompareTag("Player"))
+		{
+			_isReading = false;
+			GameManager.Instance.UIManager.CloseMessage();
 		}
 	}
 }
