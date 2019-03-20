@@ -11,34 +11,8 @@ public class TriggerMessage : MonoBehaviour
 	{
 		if (!_isRead && other.CompareTag("Player"))
 		{
-			GameManager.Instance.UIManager.PrintMessage(message);
-			if (message.maxTimeOnScreen > 0)
-			{
-				StartCoroutine(WillCloseMessageIn(message.maxTimeOnScreen));
-			}
+			_isRead = true;
+			GameManager.Instance.UIManager.PrintPopUp(message);
 		}
-	}
-
-	private IEnumerator WillCloseMessageIn(float time)
-	{
-		yield return new WaitForSeconds(time);
-		if (!_isRead)
-		{
-			CloseMessage();
-		}
-	}
-
-	private void OnTriggerExit(Collider other)
-	{
-		if (other.CompareTag("Player"))
-		{
-			CloseMessage();
-		}
-	}
-
-	private void CloseMessage()
-	{
-		GameManager.Instance.UIManager.CloseMessage();
-		_isRead = true;
 	}
 }

@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
 	[SerializeField] private float fadeInTimescaleTime = 0.1f;
+	[SerializeField] private Message endMessage = null;
 	public static GameManager Instance { get; private set; }
 	private Coroutine _timeScaleCoroutine;
 	private UIManager _uiManager;
@@ -26,7 +27,7 @@ public class GameManager : MonoBehaviour
 			_currentNumberNotes = value;
 			if (_currentNumberNotes >= _numberNotesRequired)
 			{
-				LoadLevelFadeInAndOut("WinScene");
+				_uiManager.PrintPopUp(endMessage);
 			}
 		}
 	}

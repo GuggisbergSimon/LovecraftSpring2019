@@ -15,15 +15,8 @@ public class UIManager : MonoBehaviour
 	[SerializeField] private TextMeshProUGUI textDisplayedTop = null;
 	private Coroutine _currentDialogueTop;
 	private Coroutine _currentDialogueBottom;
-	private Message _currentMessage;
 	private bool _isFadingToBlack;
 	public bool IsFadingToBlack => _isFadingToBlack;
-
-	public enum DialoguePosition
-	{
-		Top,
-		Bottom
-	}
 
 	public void FadeToBlack(bool value)
 	{
@@ -33,7 +26,7 @@ public class UIManager : MonoBehaviour
 	private IEnumerator FadingToBlack(bool value, float time)
 	{
 		_isFadingToBlack = true;
-		//blackPanel.gameObject.SetActive(true);
+		blackPanel.gameObject.SetActive(true);
 		float timer = 0.0f;
 		Color tempColor = blackPanel.color;
 		while (timer < time)
@@ -44,104 +37,81 @@ public class UIManager : MonoBehaviour
 			yield return null;
 		}
 
-		//blackPanel.gameObject.SetActive(value);
+		blackPanel.gameObject.SetActive(value);
 		_isFadingToBlack = false;
+	}
+
+	public void PrintPopUp(Message message)
+	{
+		dialoguePanelTop.SetActive(true);
+		if (_currentDialogueTop != null)
+		{
+			StopCoroutine(_currentDialogueTop);
+		}
+
+		textDisplayedTop.color = message.color;
+		if (message.timeBetweenLetters.CompareTo(0) != 0)
+		{
+			_currentDialogueTop = StartCoroutine(PrintLetterByLetter(textDisplayedTop, message));
+		}
+		else
+		{
+			PrintAll(textDisplayedTop, message);
+		}
+
+		if (message.maxTimeOnScreen > 0)
+		{
+			Invoke("ClosePopUp", message.maxTimeOnScreen);
+		}
 	}
 
 	public void PrintMessage(Message message)
 	{
-		PrintMessage(message, DialoguePosition.Bottom);
-	}
-
-	public void PrintMessage(Message message, DialoguePosition dialoguePosition)
-	{
-		GameObject dialoguePanel;
-		TextMeshProUGUI textDisplayed;
-		Coroutine tempCoroutine;
-		if (dialoguePosition == DialoguePosition.Top)
+		dialoguePanelBottom.SetActive(true);
+		if (_currentDialogueBottom != null)
 		{
-			dialoguePanel = dialoguePanelTop;
-			textDisplayed = textDisplayedTop;
-			tempCoroutine = _currentDialogueTop;
-		}
-		else
-		{
-			dialoguePanel = dialoguePanelBottom;
-			textDisplayed = textDisplayedBottom;
-			tempCoroutine = _currentDialogueBottom;
+			StopCoroutine(_currentDialogueBottom);
 		}
 
-		dialoguePanel.SetActive(true);
-		if (tempCoroutine != null)
-		{
-			StopCoroutine(tempCoroutine);
-		}
-
-		_currentMessage = message;
-
-		textDisplayed.color = _currentMessage.color;
+		textDisplayedBottom.color = message.color;
 		if (message.timeBetweenLetters.CompareTo(0) != 0)
 		{
-			tempCoroutine = StartCoroutine(PrintLetterByLetter(dialoguePosition));
+			_currentDialogueBottom = StartCoroutine(PrintLetterByLetter(textDisplayedBottom, message));
 		}
 		else
 		{
-			PrintAll(dialoguePosition);
+			PrintAll(textDisplayedBottom, message);
 		}
+
+
+		if (message.maxTimeOnScreen > 0)
+		{
+			Invoke("CloseMessage", message.maxTimeOnScreen);
+		}
+	}
+
+	private void ClosePopUp()
+	{
+		dialoguePanelTop.SetActive(false);
 	}
 
 	public void CloseMessage()
 	{
-		CloseMessage(DialoguePosition.Bottom);
+		dialoguePanelBottom.SetActive(false);
 	}
 
-	public void CloseMessage(DialoguePosition dialoguePosition)
+	private IEnumerator PrintLetterByLetter(TextMeshProUGUI textDisplayed, Message currentMessage)
 	{
-		GameObject dialoguePanel;
-		if (dialoguePosition == DialoguePosition.Top)
-		{
-			dialoguePanel = dialoguePanelTop;
-		}
-		else
-		{
-			dialoguePanel = dialoguePanelBottom;
-		}
-
-		dialoguePanel.SetActive(false);
-	}
-
-	private IEnumerator PrintLetterByLetter(DialoguePosition dialoguePosition)
-	{
-		TextMeshProUGUI textDisplayed;
-		if (dialoguePosition == DialoguePosition.Top)
-		{
-			textDisplayed = textDisplayedTop;
-		}
-		else
-		{
-			textDisplayed = textDisplayedBottom;
-		}
-
 		textDisplayed.text = "";
-		for (int i = 0; i < _currentMessage.text.Length; i++)
+		for (int i = 0; i < currentMessage.text.Length; i++)
 		{
-			textDisplayed.text += _currentMessage.text[i];
-			yield return new WaitForSeconds(_currentMessage.timeBetweenLetters);
+			textDisplayed.text += currentMessage.text[i];
+			yield return new WaitForSeconds(currentMessage.timeBetweenLetters);
 		}
 	}
 
-	private void PrintAll(DialoguePosition dialoguePosition)
+	private void PrintAll(TextMeshProUGUI textDisplayed, Message currentMessage)
 	{
-		TextMeshProUGUI textDisplayed;
-		if (dialoguePosition == DialoguePosition.Top)
-		{
-			textDisplayed = textDisplayedTop;
-		}
-		else
-		{
-			textDisplayed = textDisplayedBottom;
-		}
-
-		textDisplayed.text = _currentMessage.text;
+		textDisplayed.text = currentMessage.text;
 	}
 }
