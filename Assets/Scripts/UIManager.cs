@@ -13,6 +13,7 @@ public class UIManager : MonoBehaviour
 	[SerializeField] private TextMeshProUGUI textDisplayedBottom = null;
 	[SerializeField] private GameObject dialoguePanelTop = null;
 	[SerializeField] private TextMeshProUGUI textDisplayedTop = null;
+	[SerializeField] private GameObject pausePanel = null;
 	private Coroutine _currentDialogueTop;
 	private Coroutine _currentDialogueBottom;
 	private bool _isFadingToBlack;
@@ -98,6 +99,13 @@ public class UIManager : MonoBehaviour
 	public void CloseMessage()
 	{
 		dialoguePanelBottom.SetActive(false);
+	}
+
+	public void TogglePause()
+	{
+		pausePanel.SetActive(!pausePanel.activeSelf);
+		GameManager.Instance.Player.CanMove = !pausePanel.activeSelf;
+		GameManager.Instance.ChangeTimeScale(pausePanel.activeSelf ? 0.0f : 1.0f);
 	}
 
 	private IEnumerator PrintLetterByLetter(TextMeshProUGUI textDisplayed, Message currentMessage)

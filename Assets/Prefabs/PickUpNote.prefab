@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1231664254}
   - component: {fileID: 1231664253}
   - component: {fileID: 1231664252}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: Pickable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -103,7 +103,7 @@ GameObject:
   - component: {fileID: 1528460721950059080}
   - component: {fileID: 1528460721950059081}
   - component: {fileID: 1528460721950059082}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: Interactible
   m_TagString: Untagged
   m_Icon: {fileID: 0}

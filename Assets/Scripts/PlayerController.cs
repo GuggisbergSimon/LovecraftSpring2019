@@ -26,6 +26,13 @@ public class PlayerController : MonoBehaviour
 	private float _actualSpeed;
 	private float rotationY = 0.0f;
 	private bool _isAlive = true;
+	private bool _canMove = true;
+
+	public bool CanMove
+	{
+		get => _canMove;
+		set => _canMove = value;
+	}
 	private bool _dieOnImpact;
 
 	private void Start()
@@ -36,7 +43,7 @@ public class PlayerController : MonoBehaviour
 
 	private void Update()
 	{
-		if (_isAlive)
+		if (_isAlive && _canMove)
 		{
 			//handles moving inputs
 			_horizontalInput = Input.GetAxis("Horizontal");
@@ -86,8 +93,15 @@ public class PlayerController : MonoBehaviour
 				if (Physics.Raycast(myCamera.position, myCamera.forward, out hit, maxDistanceInteract,
 					interactibleLayer))
 				{
+					//todo fix bug here
 					hit.transform.GetComponent<Interactive>().Interact();
 				}
+			}
+			
+			//handles pause input
+			if (Input.GetButtonDown("Pause"))
+			{
+				GameManager.Instance.UIManager.TogglePause();
 			}
 		}
 	}
@@ -97,7 +111,7 @@ public class PlayerController : MonoBehaviour
 		//applies moving inputs
 		_myRigidBody.velocity =
 			_actualSpeed * (transform.right.normalized * _horizontalInput +
-			                transform.forward.normalized * _verticalInput) + Vector3.up * _myRigidBody.velocity.y;
+							transform.forward.normalized * _verticalInput) + Vector3.up * _myRigidBody.velocity.y;
 	}
 
 	private void OnCollisionEnter(Collision other)

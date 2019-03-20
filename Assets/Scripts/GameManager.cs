@@ -126,31 +126,8 @@ public class GameManager : MonoBehaviour
 
 	public void ChangeTimeScale(float timeScale)
 	{
-		if (_timeScaleCoroutine != null)
-		{
-			StopCoroutine(_timeScaleCoroutine);
-		}
-
-		if (fadeInTimescaleTime.CompareTo(0) > 0)
-		{
-			_timeScaleCoroutine = StartCoroutine(ChangingTimeScale(timeScale));
-		}
-		else
-		{
-			Time.timeScale = timeScale;
-		}
-	}
-
-	private IEnumerator ChangingTimeScale(float timeScale)
-	{
-		float timer = 0.0f;
-		float initTimeScale = Time.timeScale;
-		while (timer < fadeInTimescaleTime)
-		{
-			timer += Time.unscaledDeltaTime;
-			Time.timeScale = Mathf.Lerp(initTimeScale, timeScale, timer / fadeInTimescaleTime);
-			yield return null;
-		}
+		//todo add pause sound
+		Time.timeScale = timeScale;
 	}
 
 	private IEnumerator QuittingGame()
