@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
 	[SerializeField] private float fadeInTimescaleTime = 0.1f;
+	[SerializeField] private AudioMixer generalMixer = null;
 	[SerializeField] private Message endMessage = null;
 	public static GameManager Instance { get; private set; }
 	private Coroutine _timeScaleCoroutine;
@@ -28,6 +29,7 @@ public class GameManager : MonoBehaviour
 			if (_currentNumberNotes >= _numberNotesRequired)
 			{
 				_uiManager.PrintPopUp(endMessage);
+				//todo add code here to unlock WinEnd (come back to start or something
 			}
 		}
 	}
@@ -126,7 +128,16 @@ public class GameManager : MonoBehaviour
 
 	public void ChangeTimeScale(float timeScale)
 	{
-		//todo add pause sound
+		if (Time.timeScale.CompareTo(0) == 0)
+		{
+			AudioListener.pause = true;
+		}
+		else
+		{
+			AudioListener.pause = false;
+			generalMixer.SetFloat("Pitch", Time.timeScale);
+		}
+
 		Time.timeScale = timeScale;
 	}
 

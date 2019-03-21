@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour
 		get => _canMove;
 		set => _canMove = value;
 	}
+
 	private bool _dieOnImpact;
 
 	private void Start()
@@ -97,10 +98,11 @@ public class PlayerController : MonoBehaviour
 					hit.transform.GetComponent<Interactive>().Interact();
 				}
 			}
-			
+
 			//handles pause input
 			if (Input.GetButtonDown("Pause"))
 			{
+				//todo add select default button UI somewhere
 				GameManager.Instance.UIManager.TogglePause();
 			}
 		}
