@@ -4,11 +4,42 @@ using UnityEngine;
 
 public class Compass : MonoBehaviour
 {
-	//todo make compass point to origin of player ?
-	[SerializeField] private Vector3 compassAxis = Vector3.forward;
-	
+	[SerializeField] private CompassMode compassMode = 0;
+	[SerializeField] private Vector3 northDirection = Vector3.forward;
+	private Vector3 _goal;
+	private Vector3 _initPos;
+
+	private enum CompassMode
+	{
+		North,
+		OriginPlayer,
+		ClosestPickUp
+	}
+
+	private void Start()
+	{
+		_initPos = transform.position;
+	}
+
 	private void Update()
 	{
-		transform.forward = compassAxis;
+		switch (compassMode)
+		{
+			case CompassMode.North:
+			{
+				_goal = northDirection;
+				break;
+			}
+			case CompassMode.OriginPlayer:
+			{
+				_goal = transform.position - _initPos;
+				break;
+			}
+		}
+
+		//transform.forward = _goal;
+		//todo to correct that for 3D
+		Quaternion targetRot = Quaternion.Euler(0f, Mathf.Atan2(_goal.z, _goal.x) * Mathf.Rad2Deg - 90, 0f);
+		transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, 360);
 	}
 }
