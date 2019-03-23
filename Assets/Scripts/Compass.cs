@@ -32,15 +32,12 @@ public class Compass : MonoBehaviour
 			}
 			case CompassMode.OriginPlayer:
 			{
-				_goal = transform.position - _initPos;
-				goal *= (Vector3.right + Vector3.forward);
+				_goal = _initPos - transform.position;
+				_goal = _goal.x * Vector3.right + _goal.z * Vector3.forward;
 				break;
 			}
 		}
 
 		transform.forward = _goal;
-		//todo to correct that for 3D
-		//Quaternion targetRot = Quaternion.Euler(0f, Mathf.Atan2(_goal.z, _goal.x) * Mathf.Rad2Deg - 90, 0f);
-		//transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, 360);
 	}
 }

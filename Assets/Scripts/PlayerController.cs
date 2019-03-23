@@ -89,7 +89,7 @@ public class PlayerController : MonoBehaviour
 				if (Physics.Raycast(myCamera.position, myCamera.forward, out hit, maxDistanceInteract,
 					interactibleLayer))
 				{
-					//todo fix bug here
+					//todo fix error here
 					hit.transform.GetComponent<Interactive>().Interact();
 				}
 			}
