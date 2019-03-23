@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
 	[SerializeField] private float maxDistanceInteract = 5.0f;
 	[SerializeField] private LayerMask drawLayer = 0;
 	[SerializeField] private LayerMask interactibleLayer = 0;
+	[SerializeField] private float cooldDownTrace = 5.0f;
 
 	private float _horizontalInput;
 	private float _verticalInput;
@@ -27,6 +28,7 @@ public class PlayerController : MonoBehaviour
 	private float rotationY = 0.0f;
 	private bool _isAlive = true;
 	private bool _canMove = true;
+	private bool _canTrace = true;
 
 	public bool CanMove
 	{
@@ -76,16 +78,9 @@ public class PlayerController : MonoBehaviour
 
 			//checks for decal
 			//code from youtube.com/watch?v=VKP9APfsRAk
-			if (Input.GetButtonDown("Mark"))
+			if (Input.GetButtonDown("Mark") && _canTrace)
 			{
-				RaycastHit hit;
-				if (Physics.Raycast(myCamera.position, myCamera.forward, out hit, maxDistanceDraw, drawLayer))
-				{
-					var decal = Instantiate(decalPrefab, hit.transform);
-					decal.transform.position = hit.point;
-					decal.transform.forward = hit.normal * -1f;
-					decal.transform.Rotate(0, 0, Random.Range(0, 360));
-				}
+				StartCoroutine(Trace());
 			}
 			//handles interaction with items
 			else if (Input.GetButtonDown("Interact"))
@@ -122,6 +117,30 @@ public class PlayerController : MonoBehaviour
 		{
 			Die();
 		}
+	}
+
+	private IEnumerator Trace()
+	{
+		RaycastHit hit;
+		if (Physics.Raycast(myCamera.position, myCamera.forward, out hit, maxDistanceDraw, drawLayer))
+		{
+			_canTrace = false;
+			var decal = Instantiate(decalPrefab, hit.transform);
+			decal.transform.position = hit.point;
+			decal.transform.forward = hit.normal * -1f;
+			decal.transform.Rotate(0, 0, Random.Range(0, 360));
+			float timer = cooldDownTrace;
+			while (timer > 0)
+			{
+				GameManager.Instance.UIManager.RefreshCoolDown(timer / cooldDownTrace);
+				timer -= Time.deltaTime;
+				yield return null;
+			}
+
+			_canTrace = true;
+		}
+
+		yield return null;
 	}
 
 	public void Die()

@@ -14,6 +14,7 @@ public class UIManager : MonoBehaviour
 	[SerializeField] private GameObject dialoguePanelTop = null;
 	[SerializeField] private TextMeshProUGUI textDisplayedTop = null;
 	[SerializeField] private GameObject pausePanel = null;
+	[SerializeField] private Image coolDownImage = null;
 	private Coroutine _currentDialogueTop;
 	private Coroutine _currentDialogueBottom;
 	private bool _isFadingToBlack;
@@ -22,6 +23,11 @@ public class UIManager : MonoBehaviour
 	public void FadeToBlack(bool value)
 	{
 		StartCoroutine(FadingToBlack(value, fadingToBlackTime));
+	}
+	
+	public void RefreshCoolDown(float percent)
+	{
+		coolDownImage.fillAmount = percent;
 	}
 
 	private IEnumerator FadingToBlack(bool value, float time)
