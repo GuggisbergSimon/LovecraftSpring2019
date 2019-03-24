@@ -43,4 +43,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a07f941e58072141b29c3711d520793, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fadeInTimescaleTime: 0.1
+  fadeInTimescaleTime: 0.2
+  generalMixer: {fileID: 24100000, guid: c5e479368983bb647a8ff32b707d246b, type: 2}
+  endMessage: {fileID: 11400000, guid: 915a22cc8b977564a9117d781f12e7dc, type: 2}

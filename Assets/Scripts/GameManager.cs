@@ -19,8 +19,8 @@ public class GameManager : MonoBehaviour
 	private bool _isQuitting;
 	private int _numberNotesRequired;
 	private int _currentNumberNotes;
-	private float _sensitivityX;
-	private float _sensitivityY;
+	private float _sensitivityX = 2.0f;
+	private float _sensitivityY = 1.5f;
 	private bool _invertX;
 	private bool _invertY;
 	public float SensitivityX

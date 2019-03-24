@@ -6,9 +6,11 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
 	[SerializeField] private float moveSpeed = 5.0f;
+
 	[SerializeField] private float sprintSpeed = 10.0f;
-	[SerializeField] private float sensitivityX;
-	[SerializeField] private float sensitivityY;
+
+	//[SerializeField] private float sensitivityX;
+	//[SerializeField] private float sensitivityY;
 	[SerializeField] private float minimumY = -85;
 	[SerializeField] private float maximumY = 80;
 	[SerializeField] private float fallingSpeedDeath = 100;
@@ -64,8 +66,10 @@ public class PlayerController : MonoBehaviour
 
 			//handles rotation inputs
 			//code from stackoverflow.com/questions/8465323/unity-fps-rotation-camera
-			float rotationX = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * sensitivityX;
-			rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
+			float rotationX = transform.localEulerAngles.y + Input.GetAxis("Mouse X") *
+			                  GameManager.Instance.SensitivityX * (GameManager.Instance.InvertX ? -1 : 1);
+			rotationY += Input.GetAxis("Mouse Y") * GameManager.Instance.SensitivityY *
+			             (GameManager.Instance.InvertY ? -1 : 1);
 			rotationY = Mathf.Clamp(rotationY, minimumY, maximumY);
 			transform.localEulerAngles = new Vector3(0, rotationX, 0);
 			myCamera.localEulerAngles = new Vector3(-rotationY, 0, 0);
