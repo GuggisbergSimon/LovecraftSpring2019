@@ -108,7 +108,7 @@ public class PlayerController : MonoBehaviour
 		//applies moving inputs
 		_myRigidBody.velocity =
 			_actualSpeed * (transform.right.normalized * _horizontalInput +
-							transform.forward.normalized * _verticalInput) + Vector3.up * _myRigidBody.velocity.y;
+			                transform.forward.normalized * _verticalInput) + Vector3.up * _myRigidBody.velocity.y;
 	}
 
 	private void OnCollisionEnter(Collision other)
@@ -132,8 +132,8 @@ public class PlayerController : MonoBehaviour
 			float timer = cooldDownTrace;
 			while (timer > 0)
 			{
-				GameManager.Instance.UIManager.RefreshCoolDown(timer / cooldDownTrace);
 				timer -= Time.deltaTime;
+				GameManager.Instance.UIManager.RefreshCoolDown(timer / cooldDownTrace);
 				yield return null;
 			}
 

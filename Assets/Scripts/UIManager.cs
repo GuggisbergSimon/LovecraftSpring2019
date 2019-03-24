@@ -24,7 +24,7 @@ public class UIManager : MonoBehaviour
 	{
 		StartCoroutine(FadingToBlack(value, fadingToBlackTime));
 	}
-	
+
 	public void RefreshCoolDown(float percent)
 	{
 		coolDownImage.fillAmount = percent;
