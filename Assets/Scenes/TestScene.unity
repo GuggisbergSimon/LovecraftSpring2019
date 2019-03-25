@@ -1316,6 +1316,10 @@ MonoBehaviour:
   wallWeight: 0.75
   minDoorsPerFloor: 2
   maxDoorsPerFloor: 6
+  linkLayer:
+    serializedVersion: 2
+    m_Bits: 4
+  maxDistanceRayCastLink: 30
 --- !u!4 &1694677957
 Transform:
   m_ObjectHideFlags: 0
