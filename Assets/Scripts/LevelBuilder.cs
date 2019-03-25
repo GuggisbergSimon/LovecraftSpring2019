@@ -40,58 +40,36 @@ public class LevelBuilder : MonoBehaviour
 	{
 		BuildTowerBase(pos);
 		int currentFloor = 1;
-
-		//build the walls and make sure there is at least 2 doors
-		//TODO add check wether it's possible to place doors (ie: if there is enough room) and if there is a door to link in direction (raycast link tag)
-		//register every door as a possible link
-
-		float currentDoorWeight = doorWeight;
-		float currentWallWeight = wallWeight;
-
-		for (int i = 0; i < 6; i++)
+		List<Transform> tempOpenList = new List<Transform>();
+		BuildTowerLevel(tempOpenList, pos, currentFloor);
+		foreach (var item in tempOpenList)
 		{
-			if (Random.Range(0.0f, 1.0f) * currentDoorWeight > Random.Range(0.0f, 1.0f) * currentWallWeight)
-			{
-				GameObject door = InstantiateDoor(pos, currentFloor, i);
-				_openList.Add(door.transform);
-				currentDoorWeight -= doorWeight / (maxDoorsPerFloor);
-			}
-			else
-			{
-				RaycastHit hit;
-				//todo remove that debug once it works fine
-				Debug.DrawLine(pos + Vector3.up * currentFloor * _heightFloor + Vector3.up * 4.0f,
-					pos + Vector3.up * currentFloor * _heightFloor + Vector3.up * 4.0f +
-					Quaternion.AngleAxis((i * 60) + 180, Vector3.up) * Vector3.forward * maxDistanceRayCastLink,
-					Color.red, 3);
-				//---------
-				if (Physics.Raycast(pos + Vector3.up * currentFloor * _heightFloor + Vector3.up * 4.0f,
-					Quaternion.AngleAxis((i * 60) + 180, Vector3.up) * Vector3.forward, out hit, linkLayer))
-				{
-					Debug.Log("hit");
-					if (hit.transform.CompareTag("Link"))
-					{
-						Debug.Log("bravo");
-						InstantiateDoor(pos, currentFloor, i);
-					}
-				}
-				else
-				{
-					Instantiate(wallPrefabs[Random.Range(0, wallPrefabs.Length)],
-						pos + Vector3.up * currentFloor * _heightFloor, Quaternion.Euler(0, i * 60, 0),
-						_towers[_towers.Count - 1].transform);
-					currentWallWeight -= wallWeight / (6 - minDoorsPerFloor);
-				}
-			}
+			_openList.Add(item);
 		}
 
-		//build the bridges from the doors
+		tempOpenList.Clear();
+
+		//build the base of a tower in front of each door
 		foreach (var link in _openList)
 		{
 			Vector3 baseNextTower = GetHexPos(link.position, link.eulerAngles.y);
 			baseNextTower.y = 0;
 			BuildTowerBase(baseNextTower);
+			BuildTowerLevel(tempOpenList, baseNextTower, currentFloor);
+			_closedList.Add(link);
 		}
+
+		foreach (var item in _closedList)
+		{
+			_openList.Remove(item);
+		}
+
+		foreach (var item in tempOpenList)
+		{
+			_openList.Add(item);
+		}
+
+		tempOpenList.Clear();
 	}
 
 	private GameObject InstantiateDoor(Vector3 pos, int currentFloor, int i)
@@ -99,6 +77,73 @@ public class LevelBuilder : MonoBehaviour
 		return Instantiate(bridgePrefabs[Random.Range(0, bridgePrefabs.Length)],
 			pos + Vector3.up * currentFloor * _heightFloor, Quaternion.Euler(0, i * 60, 0),
 			_towers[_towers.Count - 1].transform);
+	}
+
+	private void BuildTowerLevel(List<Transform> openList, Vector3 pos, int currentFloor)
+	{
+		//build the walls and make sure there is at least 2 doors
+		//TODO add check wether it's possible to place doors (ie: if there is enough room)
+		//register every door not linked as a possible link
+
+		float currentDoorWeight = doorWeight;
+		float currentWallWeight = wallWeight;
+
+		for (int i = 0; i < 6; i++)
+		{
+			RaycastHit hit;
+			/*Debug.DrawLine(pos + Vector3.up * currentFloor * _heightFloor + Vector3.up * 4.0f,
+				pos + Vector3.up * currentFloor * _heightFloor + Vector3.up * 4.0f +
+				Quaternion.AngleAxis((i * 60) + 180, Vector3.up) * Vector3.forward * maxDistanceRayCastLink,
+				Color.red, 3);*/
+
+			if (Physics.Raycast(pos + Vector3.up * currentFloor * _heightFloor + Vector3.up * 4.0f,
+				Quaternion.AngleAxis((i * 60) + 180, Vector3.up) * Vector3.forward, out hit, maxDistanceRayCastLink,
+				linkLayer))
+			{
+				Debug.Log("hit");
+				if (hit.transform.CompareTag("Link"))
+				{
+					Debug.Log("bravo");
+					InstantiateDoor(pos, currentFloor, i);
+				}
+			}
+			else
+			{
+				if (Random.Range(0.0f, 1.0f) * currentDoorWeight > Random.Range(0.0f, 1.0f) * currentWallWeight)
+				{
+					GameObject door = InstantiateDoor(pos, currentFloor, i);
+					openList.Add(door.transform);
+					currentDoorWeight -= doorWeight / (maxDoorsPerFloor);
+				}
+				else
+				{
+					//RaycastHit hit;
+					//todo remove that debug once it works fine
+					/*Debug.DrawLine(pos + Vector3.up * currentFloor * _heightFloor + Vector3.up * 4.0f,
+						pos + Vector3.up * currentFloor * _heightFloor + Vector3.up * 4.0f +
+						Quaternion.AngleAxis((i * 60) + 180, Vector3.up) * Vector3.forward * maxDistanceRayCastLink,
+						Color.red, 3);*/
+					//---------
+					/*if (Physics.Raycast(pos + Vector3.up * currentFloor * _heightFloor + Vector3.up * 4.0f,
+						Quaternion.AngleAxis((i * 60) + 180, Vector3.up) * Vector3.forward, out hit, linkLayer))
+					{
+						Debug.Log("hit");
+						if (hit.transform.CompareTag("Link"))
+						{
+							Debug.Log("bravo");
+							InstantiateDoor(pos, currentFloor, i);
+						}
+					}
+					else
+					{*/
+					Instantiate(wallPrefabs[Random.Range(0, wallPrefabs.Length)],
+						pos + Vector3.up * currentFloor * _heightFloor, Quaternion.Euler(0, i * 60, 0),
+						_towers[_towers.Count - 1].transform);
+					currentWallWeight -= wallWeight / (6 - minDoorsPerFloor);
+					//}
+				}
+			}
+		}
 	}
 
 	private void BuildTowerBase(Vector3 pos)
