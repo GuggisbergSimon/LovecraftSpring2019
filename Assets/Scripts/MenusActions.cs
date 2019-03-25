@@ -5,10 +5,10 @@ using UnityEngine.UI;
 
 public class MenusActions : MonoBehaviour
 {
-	[SerializeField] private Slider sensitivityXSlider;
-	[SerializeField] private Slider sensitivityYSlider;
-	[SerializeField] private Toggle invertXToggle;
-	[SerializeField] private Toggle invertYToggle;
+	[SerializeField] private Slider sensitivityXSlider = null;
+	[SerializeField] private Slider sensitivityYSlider = null;
+	[SerializeField] private Toggle invertXToggle = null;
+	[SerializeField] private Toggle invertYToggle = null;
 
 	public void ChangeSensitivityX(float value)
 	{

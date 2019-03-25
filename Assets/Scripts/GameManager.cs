@@ -6,7 +6,6 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-	[SerializeField] private float fadeInTimescaleTime = 0.1f;
 	[SerializeField] private AudioMixer generalMixer = null;
 	[SerializeField] private Message endMessage = null;
 	public static GameManager Instance { get; private set; }

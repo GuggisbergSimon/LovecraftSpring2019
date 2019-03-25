@@ -104,6 +104,11 @@ public class PlayerController : MonoBehaviour
 				//todo add select default button UI somewhere
 				GameManager.Instance.UIManager.TogglePause();
 			}
+
+			if (Input.GetButtonDown("Retry"))
+			{
+				GameManager.Instance.ReloadCurrentScene();
+			}
 		}
 	}
 

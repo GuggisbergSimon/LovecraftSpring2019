@@ -38,6 +38,9 @@ public class Compass : MonoBehaviour
 			}
 		}
 
-		transform.forward = _goal;
+		if (!_goal.Equals(Vector3.zero))
+		{
+			transform.forward = _goal;
+		}
 	}
 }
