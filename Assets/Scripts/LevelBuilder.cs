@@ -18,7 +18,9 @@ public class LevelBuilder : MonoBehaviour
 	[SerializeField] private int minDoorsPerFloor = 2;
 	[SerializeField] private int maxDoorsPerFloor = 6;
 	[SerializeField] private LayerMask linkLayer = 0;
+	[SerializeField] private LayerMask notLinkLayer = 0;
 	[SerializeField] private float maxDistanceRayCastLink = 30.0f;
+	[SerializeField] private int maxIteration = 10;
 	private float _sizeHexa;
 	private float _widthHexa = 42.784f;
 	private float _heightHexa;
@@ -33,10 +35,10 @@ public class LevelBuilder : MonoBehaviour
 		_heightHexa = _sizeHexa / 2;
 
 		//test
-		Build(transform.position);
+		StartCoroutine(Build(transform.position));
 	}
 
-	private void Build(Vector3 pos)
+	private IEnumerator Build(Vector3 pos)
 	{
 		BuildTowerBase(pos);
 		int currentFloor = 1;
@@ -48,28 +50,34 @@ public class LevelBuilder : MonoBehaviour
 		}
 
 		tempOpenList.Clear();
+		int currentIteration = 0;
 
-		//build the base of a tower in front of each door
-		foreach (var link in _openList)
+		while (_openList.Count > 0 && !(currentIteration > maxIteration))
 		{
-			Vector3 baseNextTower = GetHexPos(link.position, link.eulerAngles.y);
-			baseNextTower.y = 0;
-			BuildTowerBase(baseNextTower);
-			BuildTowerLevel(tempOpenList, baseNextTower, currentFloor);
-			_closedList.Add(link);
-		}
+			//build the base of a tower in front of each door
+			foreach (var link in _openList)
+			{
+				Vector3 baseNextTower = GetHexPos(link.position, link.eulerAngles.y);
+				baseNextTower.y = 0;
+				BuildTowerBase(baseNextTower);
+				BuildTowerLevel(tempOpenList, baseNextTower, currentFloor);
+				_closedList.Add(link);
+			}
 
-		foreach (var item in _closedList)
-		{
-			_openList.Remove(item);
-		}
+			foreach (var item in _closedList)
+			{
+				_openList.Remove(item);
+			}
 
-		foreach (var item in tempOpenList)
-		{
-			_openList.Add(item);
-		}
+			foreach (var item in tempOpenList)
+			{
+				_openList.Add(item);
+			}
 
-		tempOpenList.Clear();
+			tempOpenList.Clear();
+			currentIteration++;
+			yield return null;
+		}
 	}
 
 	private GameObject InstantiateDoor(Vector3 pos, int currentFloor, int i)
@@ -79,10 +87,17 @@ public class LevelBuilder : MonoBehaviour
 			_towers[_towers.Count - 1].transform);
 	}
 
+	private GameObject InstantiateWall(Vector3 pos, int currentFloor, int i)
+	{
+		return Instantiate(wallPrefabs[Random.Range(0, wallPrefabs.Length)],
+			pos + Vector3.up * currentFloor * _heightFloor, Quaternion.Euler(0, i * 60, 0),
+			_towers[_towers.Count - 1].transform);
+	}
+
 	private void BuildTowerLevel(List<Transform> openList, Vector3 pos, int currentFloor)
 	{
 		//build the walls and make sure there is at least 2 doors
-		//TODO add check wether it's possible to place doors (ie: if there is enough room)
+		//TODO add check wether there is already a building in place or not
 		//register every door not linked as a possible link
 
 		float currentDoorWeight = doorWeight;
@@ -91,20 +106,23 @@ public class LevelBuilder : MonoBehaviour
 		for (int i = 0; i < 6; i++)
 		{
 			RaycastHit hit;
-			/*Debug.DrawLine(pos + Vector3.up * currentFloor * _heightFloor + Vector3.up * 4.0f,
-				pos + Vector3.up * currentFloor * _heightFloor + Vector3.up * 4.0f +
-				Quaternion.AngleAxis((i * 60) + 180, Vector3.up) * Vector3.forward * maxDistanceRayCastLink,
-				Color.red, 3);*/
-
 			if (Physics.Raycast(pos + Vector3.up * currentFloor * _heightFloor + Vector3.up * 4.0f,
 				Quaternion.AngleAxis((i * 60) + 180, Vector3.up) * Vector3.forward, out hit, maxDistanceRayCastLink,
 				linkLayer))
 			{
-				Debug.Log("hit");
 				if (hit.transform.CompareTag("Link"))
 				{
-					Debug.Log("bravo");
 					InstantiateDoor(pos, currentFloor, i);
+				}
+			}
+			else if (Physics.Raycast(pos + Vector3.up * currentFloor * _heightFloor + Vector3.up * 4.0f,
+				Quaternion.AngleAxis((i * 60) + 180, Vector3.up) * Vector3.forward, out hit, maxDistanceRayCastLink,
+				notLinkLayer))
+
+			{
+				if (hit.transform.CompareTag("NotLink"))
+				{
+					InstantiateWall(pos, currentFloor, i);
 				}
 			}
 			else
@@ -117,30 +135,8 @@ public class LevelBuilder : MonoBehaviour
 				}
 				else
 				{
-					//RaycastHit hit;
-					//todo remove that debug once it works fine
-					/*Debug.DrawLine(pos + Vector3.up * currentFloor * _heightFloor + Vector3.up * 4.0f,
-						pos + Vector3.up * currentFloor * _heightFloor + Vector3.up * 4.0f +
-						Quaternion.AngleAxis((i * 60) + 180, Vector3.up) * Vector3.forward * maxDistanceRayCastLink,
-						Color.red, 3);*/
-					//---------
-					/*if (Physics.Raycast(pos + Vector3.up * currentFloor * _heightFloor + Vector3.up * 4.0f,
-						Quaternion.AngleAxis((i * 60) + 180, Vector3.up) * Vector3.forward, out hit, linkLayer))
-					{
-						Debug.Log("hit");
-						if (hit.transform.CompareTag("Link"))
-						{
-							Debug.Log("bravo");
-							InstantiateDoor(pos, currentFloor, i);
-						}
-					}
-					else
-					{*/
-					Instantiate(wallPrefabs[Random.Range(0, wallPrefabs.Length)],
-						pos + Vector3.up * currentFloor * _heightFloor, Quaternion.Euler(0, i * 60, 0),
-						_towers[_towers.Count - 1].transform);
+					InstantiateWall(pos, currentFloor, i);
 					currentWallWeight -= wallWeight / (6 - minDoorsPerFloor);
-					//}
 				}
 			}
 		}

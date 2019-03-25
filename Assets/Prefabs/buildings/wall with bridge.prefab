@@ -1072,7 +1072,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4512634222586028526}
   - component: {fileID: 8435215952685528770}
-  m_Layer: 2
+  m_Layer: 10
   m_Name: link
   m_TagString: Link
   m_Icon: {fileID: 0}
