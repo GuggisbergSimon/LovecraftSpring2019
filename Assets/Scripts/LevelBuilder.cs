@@ -38,10 +38,10 @@ public class LevelBuilder : MonoBehaviour
 		_heightHexa = _sizeHexa / 2;
 
 		//test
-		Build(transform.position);
+		StartCoroutine(Build(transform.position));
 	}
 
-	private void Build(Vector3 pos)
+	private IEnumerator Build(Vector3 pos)
 	{
 		BuildTowerBase(pos);
 		int currentFloor = 1;
@@ -101,16 +101,37 @@ public class LevelBuilder : MonoBehaviour
 				doorWeightLocal = 0;
 				wallWeightLocal = 1;
 			}
+
+			yield return null;
 		}
 
+		//build all floors
 		currentFloor++;
 		while (currentFloor < maxFloors)
 		{
+			List<GameObject> tempTowers = new List<GameObject>();
 			for (int i = 0; i < _towers.Count; i++)
 			{
-				BuildTowerOtherLevels(_towers[i].transform.position,currentFloor,i);
+				BuildTowerOtherLevels(tempTowers, _towers[i].transform.position, currentFloor, i);
+				yield return null;
 			}
+
+			foreach (var tower in tempTowers)
+			{
+				_towers.Remove(tower);
+			}
+
+			currentFloor++;
+			Debug.Log("Floor finished");
 		}
+
+		//add tops
+		for (int i = 0; i < _towers.Count; i++)
+		{
+			BuildTop(_towers[i].transform.position, currentFloor, i);
+		}
+
+		Debug.Log("Building finished");
 	}
 
 	private GameObject InstantiateDoor(Vector3 pos, int currentFloor, int i)
@@ -127,15 +148,40 @@ public class LevelBuilder : MonoBehaviour
 			_towers[_towers.Count - 1].transform);
 	}
 
-	private void BuildTowerOtherLevels(Vector3 pos, int currentFloor, int towersIndex)
+	private void BuildTop(Vector3 pos, int currentFloor, int towersIndex)
 	{
-		//build the ground
+		Instantiate(groundPrefabs[Random.Range(0, groundPrefabs.Length)],
+			pos + Vector3.up * currentFloor * _heightFloor - Vector3.up * 0.5f,
+			Quaternion.Euler(0, Random.Range(0, 6) * 60, 0),
+			_towers[towersIndex].transform);
+	}
+
+	private void BuildTowerOtherLevels(List<GameObject> towers, Vector3 pos, int currentFloor, int towersIndex)
+	{
+		//checks if there is any connection first
+		bool mustBuildFloor = false;
 		Vector3 currentPos = pos + Vector3.up * currentFloor * _heightFloor;
-		if (Random.Range(0f, currentFloor) < Random.Range(0f, maxFloors))
+		for (int i = 0; i < 6; i++)
+		{
+			RaycastHit hitLink;
+			//checks for link and build a bridge if there is one
+			if (Physics.Raycast(currentPos + Vector3.up * 4.0f,
+				Quaternion.AngleAxis((i * 60) + 180, Vector3.up) * Vector3.forward, out hitLink,
+				maxDistanceRayCastLink, linkLayer))
+			{
+				if (hitLink.transform.CompareTag("Link"))
+				{
+					mustBuildFloor = true;
+				}
+			}
+		}
+
+		//if no connection, test wether to build a floor or not
+		if (Random.Range(0f, currentFloor) < Random.Range(0f, maxFloors) || mustBuildFloor)
 		{
 			RaycastHit hitSelf;
 			if (Physics.Raycast(currentPos + Vector3.up * 4.0f, Vector3.down,
-				out hitSelf, _heightFloor - 0.1f))
+				out hitSelf, _heightFloor * 1.5f))
 			{
 				Instantiate(interiorRampPrefabs[Random.Range(0, interiorRampPrefabs.Length)],
 					pos + Vector3.up * currentFloor * _heightFloor,
@@ -159,6 +205,7 @@ public class LevelBuilder : MonoBehaviour
 							doorsQuantity++;
 						}
 					}
+					//checks for nolink a build a wall
 					else if (Physics.Raycast(pos + Vector3.up * currentFloor * _heightFloor + Vector3.up * 4.0f,
 						Quaternion.AngleAxis((i * 60) + 180, Vector3.up) * Vector3.forward, out hitLink,
 						maxDistanceRayCastLink,
@@ -172,10 +219,12 @@ public class LevelBuilder : MonoBehaviour
 					}
 					else
 					{
+						//checks if neighbor nearby
 						RaycastHit hitNeighbor;
 						if (Physics.Raycast(GetHexPos(currentPos, (i * 60)),
 							Vector3.down, out hitNeighbor, _heightFloor - 0.1f))
 						{
+							//determine randomly wether to place a wall or not
 							if (Random.Range(0.0f, 1.0f) * currentDoorWeight >
 							    Random.Range(0.0f, 1.0f) * currentWallWeight)
 							{
@@ -189,6 +238,12 @@ public class LevelBuilder : MonoBehaviour
 								currentWallWeight -= wallWeightOthers / (6 - minDoorsPerFloor);
 							}
 						}
+						//if no neighbor, then spawn wall
+						else
+						{
+							InstantiateWall(pos, currentFloor, i);
+							currentWallWeight -= wallWeightOthers / (6 - minDoorsPerFloor);
+						}
 					}
 				}
 
@@ -201,10 +256,8 @@ public class LevelBuilder : MonoBehaviour
 		else
 		{
 			//build the top of a tower
-			Instantiate(groundPrefabs[Random.Range(0, groundPrefabs.Length)],
-				currentPos - Vector3.up * 0.5f, Quaternion.Euler(0, Random.Range(0, 6) * 60, 0),
-				_towers[towersIndex].transform);
-			//todo remove that tower so that we do not iterate on it again !!!
+			BuildTop(pos, currentFloor, towersIndex);
+			towers.Add(_towers[towersIndex]);
 		}
 	}
 

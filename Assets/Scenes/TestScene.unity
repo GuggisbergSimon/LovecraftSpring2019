@@ -1300,7 +1300,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88a89147b82cf0a41af0c4534f79c91e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxFloors: 5
+  maxFloors: 15
   wallPrefabs:
   - {fileID: 7259832287391146631, guid: 70988102a9caa9342a2b4e0379528b48, type: 3}
   - {fileID: 152622399932553761, guid: 5fccec12d731b5543916bbf05d6a08b3, type: 3}
@@ -1312,8 +1312,10 @@ MonoBehaviour:
   - {fileID: 1281900391462923106, guid: c56ca65ea7c4c5b459c5bbc00977efbc, type: 3}
   bridgePrefabs:
   - {fileID: 2220550610017634248, guid: 781ace07923f03c4096895cc14deb751, type: 3}
-  doorWeight: 0.25
-  wallWeight: 0.75
+  doorWeightFirst: 0.25
+  wallWeightFirst: 0.75
+  doorWeightOthers: 0.25
+  wallWeightOthers: 0.75
   minDoorsPerFloor: 2
   maxDoorsPerFloor: 6
   linkLayer:
