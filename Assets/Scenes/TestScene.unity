@@ -1323,7 +1323,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2048
   maxDistanceRayCastLink: 30
-  maxIteration: 10
+  maxIteration: 5
 --- !u!4 &1694677957
 Transform:
   m_ObjectHideFlags: 0

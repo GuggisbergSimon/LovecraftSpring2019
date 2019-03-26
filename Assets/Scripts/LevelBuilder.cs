@@ -28,6 +28,7 @@ public class LevelBuilder : MonoBehaviour
 	private List<Transform> _openList = new List<Transform>();
 	private List<Transform> _closedList = new List<Transform>();
 	private List<GameObject> _towers = new List<GameObject>();
+	private List<Vector3> _specialRooms = new List<Vector3>();
 
 	private void Start()
 	{
@@ -75,6 +76,7 @@ public class LevelBuilder : MonoBehaviour
 					BuildTowerBase(baseNextTower);
 					BuildTowerLevel(tempOpenList, baseNextTower, currentFloor);
 				}
+
 				_closedList.Add(link);
 			}
 
@@ -111,11 +113,11 @@ public class LevelBuilder : MonoBehaviour
 	private void BuildTowerLevel(List<Transform> openList, Vector3 pos, int currentFloor)
 	{
 		//build the walls and make sure there is at least 2 doors
-		//TODO add check wether there is already a building in place or not
 		//register every door not linked as a possible link
 
 		float currentDoorWeight = doorWeight;
 		float currentWallWeight = wallWeight;
+		int doorsQuantity = 0;
 
 		for (int i = 0; i < 6; i++)
 		{
@@ -128,6 +130,8 @@ public class LevelBuilder : MonoBehaviour
 				if (hit.transform.CompareTag("Link"))
 				{
 					InstantiateDoor(pos, currentFloor, i);
+					currentDoorWeight -= doorWeight / (maxDoorsPerFloor);
+					doorsQuantity++;
 				}
 			}
 			//checks for no link (wall/window) and builds a no link if there is
@@ -139,6 +143,7 @@ public class LevelBuilder : MonoBehaviour
 				if (hit.transform.CompareTag("NotLink"))
 				{
 					InstantiateWall(pos, currentFloor, i);
+					currentWallWeight -= wallWeight / (6 - minDoorsPerFloor);
 				}
 			}
 			else
@@ -148,6 +153,7 @@ public class LevelBuilder : MonoBehaviour
 					GameObject door = InstantiateDoor(pos, currentFloor, i);
 					openList.Add(door.transform);
 					currentDoorWeight -= doorWeight / (maxDoorsPerFloor);
+					doorsQuantity++;
 				}
 				else
 				{
@@ -155,6 +161,11 @@ public class LevelBuilder : MonoBehaviour
 					currentWallWeight -= wallWeight / (6 - minDoorsPerFloor);
 				}
 			}
+		}
+
+		if (doorsQuantity < minDoorsPerFloor)
+		{
+			_specialRooms.Add(pos);
 		}
 	}
 
