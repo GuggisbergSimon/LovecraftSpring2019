@@ -51,6 +51,7 @@ public class LevelBuilder : MonoBehaviour
 
 		tempOpenList.Clear();
 		int currentIteration = 0;
+		yield return null;
 
 		while (_openList.Count > 0 && !(currentIteration > maxIteration))
 		{
@@ -58,9 +59,22 @@ public class LevelBuilder : MonoBehaviour
 			foreach (var link in _openList)
 			{
 				Vector3 baseNextTower = GetHexPos(link.position, link.eulerAngles.y);
-				baseNextTower.y = 0;
-				BuildTowerBase(baseNextTower);
-				BuildTowerLevel(tempOpenList, baseNextTower, currentFloor);
+				bool canBuild = true;
+				foreach (var closedLink in _closedList)
+				{
+					if (GetHexPos(closedLink.position, closedLink.eulerAngles.y).Equals(baseNextTower))
+					{
+						canBuild = false;
+					}
+				}
+
+				if (canBuild)
+				{
+					baseNextTower.y = 0;
+
+					BuildTowerBase(baseNextTower);
+					BuildTowerLevel(tempOpenList, baseNextTower, currentFloor);
+				}
 				_closedList.Add(link);
 			}
 
@@ -106,6 +120,7 @@ public class LevelBuilder : MonoBehaviour
 		for (int i = 0; i < 6; i++)
 		{
 			RaycastHit hit;
+			//checks for link and build a bridge if there is
 			if (Physics.Raycast(pos + Vector3.up * currentFloor * _heightFloor + Vector3.up * 4.0f,
 				Quaternion.AngleAxis((i * 60) + 180, Vector3.up) * Vector3.forward, out hit, maxDistanceRayCastLink,
 				linkLayer))
@@ -115,6 +130,7 @@ public class LevelBuilder : MonoBehaviour
 					InstantiateDoor(pos, currentFloor, i);
 				}
 			}
+			//checks for no link (wall/window) and builds a no link if there is
 			else if (Physics.Raycast(pos + Vector3.up * currentFloor * _heightFloor + Vector3.up * 4.0f,
 				Quaternion.AngleAxis((i * 60) + 180, Vector3.up) * Vector3.forward, out hit, maxDistanceRayCastLink,
 				notLinkLayer))
