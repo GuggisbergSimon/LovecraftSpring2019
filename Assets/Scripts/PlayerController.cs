@@ -128,6 +128,14 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
+	private void OnTriggerEnter(Collider other)
+	{
+		if (other.CompareTag("Enemy"))
+		{
+			Die();
+		}
+	}
+
 	private IEnumerator Trace()
 	{
 		RaycastHit hit;

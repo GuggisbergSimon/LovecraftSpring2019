@@ -29,8 +29,23 @@ public class LevelBuilder : MonoBehaviour
 	private float _heightFloor = 9.0f;
 	private List<Transform> _openList = new List<Transform>();
 	private List<Transform> _closedList = new List<Transform>();
-	private List<GameObject> _towers = new List<GameObject>();
+	private List<GameObject> _openListTowers = new List<GameObject>();
+	private List<Node> _towers = new List<Node>();
+	public List<Node> Towers => _towers;
+	//todo make something out of those special rooms
 	private List<Vector3> _specialRooms = new List<Vector3>();
+
+	public struct Node
+	{
+		public Vector3 position;
+		public List<Vector3> neighborsPosition;
+
+		public Node(Vector3 position, List<Vector3> neighborsPosition)
+		{
+			this.position = position;
+			this.neighborsPosition = neighborsPosition;
+		}
+	}
 
 	private void Start()
 	{
@@ -38,10 +53,10 @@ public class LevelBuilder : MonoBehaviour
 		_heightHexa = _sizeHexa / 2;
 
 		//test
-		StartCoroutine(Build(transform.position));
+		Build(transform.position);
 	}
 
-	private IEnumerator Build(Vector3 pos)
+	private void Build(Vector3 pos)
 	{
 		BuildTowerBase(pos);
 		int currentFloor = 1;
@@ -102,7 +117,6 @@ public class LevelBuilder : MonoBehaviour
 				wallWeightLocal = 1;
 			}
 
-			yield return null;
 		}
 
 		//build all floors
@@ -110,15 +124,14 @@ public class LevelBuilder : MonoBehaviour
 		while (currentFloor < maxFloors)
 		{
 			List<GameObject> tempTowers = new List<GameObject>();
-			for (int i = 0; i < _towers.Count; i++)
+			for (int i = 0; i < _openListTowers.Count; i++)
 			{
-				BuildTowerOtherLevels(tempTowers, _towers[i].transform.position, currentFloor, i);
-				yield return null;
+				BuildTowerOtherLevels(tempTowers, _openListTowers[i].transform.position, currentFloor, i);
 			}
 
 			foreach (var tower in tempTowers)
 			{
-				_towers.Remove(tower);
+				_openListTowers.Remove(tower);
 			}
 
 			currentFloor++;
@@ -126,9 +139,9 @@ public class LevelBuilder : MonoBehaviour
 		}
 
 		//add tops
-		for (int i = 0; i < _towers.Count; i++)
+		for (int i = 0; i < _openListTowers.Count; i++)
 		{
-			BuildTop(_towers[i].transform.position, currentFloor, i);
+			BuildTop(_openListTowers[i].transform.position, currentFloor, i);
 		}
 
 		Debug.Log("Building finished");
@@ -138,14 +151,14 @@ public class LevelBuilder : MonoBehaviour
 	{
 		return Instantiate(bridgePrefabs[Random.Range(0, bridgePrefabs.Length)],
 			pos + Vector3.up * currentFloor * _heightFloor, Quaternion.Euler(0, i * 60, 0),
-			_towers[_towers.Count - 1].transform);
+			_openListTowers[_openListTowers.Count - 1].transform);
 	}
 
 	private GameObject InstantiateWall(Vector3 pos, int currentFloor, int i)
 	{
 		return Instantiate(wallPrefabs[Random.Range(0, wallPrefabs.Length)],
 			pos + Vector3.up * currentFloor * _heightFloor, Quaternion.Euler(0, i * 60, 0),
-			_towers[_towers.Count - 1].transform);
+			_openListTowers[_openListTowers.Count - 1].transform);
 	}
 
 	private void BuildTop(Vector3 pos, int currentFloor, int towersIndex)
@@ -153,7 +166,7 @@ public class LevelBuilder : MonoBehaviour
 		Instantiate(groundPrefabs[Random.Range(0, groundPrefabs.Length)],
 			pos + Vector3.up * currentFloor * _heightFloor - Vector3.up * 0.5f,
 			Quaternion.Euler(0, Random.Range(0, 6) * 60, 0),
-			_towers[towersIndex].transform);
+			_openListTowers[towersIndex].transform);
 	}
 
 	private void BuildTowerOtherLevels(List<GameObject> towers, Vector3 pos, int currentFloor, int towersIndex)
@@ -185,7 +198,7 @@ public class LevelBuilder : MonoBehaviour
 			{
 				Instantiate(interiorRampPrefabs[Random.Range(0, interiorRampPrefabs.Length)],
 					pos + Vector3.up * currentFloor * _heightFloor,
-					Quaternion.Euler(0, hitSelf.transform.eulerAngles.y, 0), _towers[towersIndex].transform);
+					Quaternion.Euler(0, hitSelf.transform.eulerAngles.y, 0), _openListTowers[towersIndex].transform);
 				int doorsQuantity = 0;
 				float currentDoorWeight = doorWeightOthers;
 				float currentWallWeight = wallWeightOthers;
@@ -257,7 +270,7 @@ public class LevelBuilder : MonoBehaviour
 		{
 			//build the top of a tower
 			BuildTop(pos, currentFloor, towersIndex);
-			towers.Add(_towers[towersIndex]);
+			towers.Add(_openListTowers[towersIndex]);
 		}
 	}
 
@@ -321,13 +334,13 @@ public class LevelBuilder : MonoBehaviour
 
 	private void BuildTowerBase(Vector3 pos)
 	{
-		_towers.Add(new GameObject("Tower"));
-		_towers[_towers.Count - 1].transform.position = pos;
-		_towers[_towers.Count - 1].transform.parent = transform;
+		_openListTowers.Add(new GameObject("Tower"));
+		_openListTowers[_openListTowers.Count - 1].transform.position = pos;
+		_openListTowers[_openListTowers.Count - 1].transform.parent = transform;
 
 		//build ground first floor
 		Instantiate(groundPrefabs[Random.Range(0, groundPrefabs.Length)], pos,
-			Quaternion.Euler(0, Random.Range(0, 6) * 60, 0), _towers[_towers.Count - 1].transform);
+			Quaternion.Euler(0, Random.Range(0, 6) * 60, 0), _openListTowers[_openListTowers.Count - 1].transform);
 
 		//build walls and make sure there is at least two doors
 		float currentDoorWeight = doorWeightFirst;
@@ -339,13 +352,13 @@ public class LevelBuilder : MonoBehaviour
 			{
 				GameObject door = Instantiate(doorPrefabs[Random.Range(0, doorPrefabs.Length)], pos,
 					Quaternion.Euler(0, i * 60, 0),
-					_towers[_towers.Count - 1].transform);
+					_openListTowers[_openListTowers.Count - 1].transform);
 				currentDoorWeight -= doorWeightFirst / (maxDoorsPerFloor);
 			}
 			else
 			{
 				Instantiate(wallPrefabs[Random.Range(0, wallPrefabs.Length)], pos, Quaternion.Euler(0, i * 60, 0),
-					_towers[_towers.Count - 1].transform);
+					_openListTowers[_openListTowers.Count - 1].transform);
 				currentWallWeight -= wallWeightFirst / (6 - minDoorsPerFloor);
 			}
 		}
@@ -353,7 +366,39 @@ public class LevelBuilder : MonoBehaviour
 		//build ground second floor
 		Instantiate(interiorRampPrefabs[Random.Range(0, interiorRampPrefabs.Length)],
 			pos + Vector3.up * _heightFloor, Quaternion.Euler(0, Random.Range(0, 6) * 60, 0),
-			_towers[_towers.Count - 1].transform);
+			_openListTowers[_openListTowers.Count - 1].transform);
+
+		//create a list of nodes with a list of neighbors per nodes
+		//todo to test
+		foreach (var tower in _openListTowers)
+		{
+			Vector3 position = tower.transform.position;
+			List<Vector3> neighborsPositions = new List<Vector3>();
+			List<Vector3> adjacentPositions = GetAdjacentPositions(position);
+			foreach (var towerNeighbor in _openListTowers)
+			{
+				foreach (var adjacent in adjacentPositions)
+				{
+					if (towerNeighbor.transform.position.Equals(adjacent))
+					{
+						neighborsPositions.Add(towerNeighbor.transform.position);
+					}
+				}
+			}
+
+			_towers.Add(new Node(position, neighborsPositions));
+		}
+	}
+
+	List<Vector3> GetAdjacentPositions(Vector3 pos)
+	{
+		List<Vector3> neighbors = new List<Vector3>();
+		for (int i = 0; i < 6; i++)
+		{
+			neighbors.Add(GetHexPos(pos, 60 * i));
+		}
+
+		return neighbors;
 	}
 
 	private Vector3 GetHexPos(Vector3 initPos, float angle)

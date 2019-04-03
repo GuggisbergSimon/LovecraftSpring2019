@@ -14,6 +14,8 @@ public class GameManager : MonoBehaviour
 	public UIManager UIManager => _uiManager;
 	private PlayerController _player;
 	public PlayerController Player => _player;
+	private LevelBuilder _levelBuilder;
+	public LevelBuilder LevelBuilder => _levelBuilder;
 	private bool _fadeOutToBlack = false;
 	private bool _isQuitting;
 	private int _numberNotesRequired;
@@ -22,11 +24,13 @@ public class GameManager : MonoBehaviour
 	private float _sensitivityY = 1.5f;
 	private bool _invertX;
 	private bool _invertY;
+
 	public float SensitivityX
 	{
 		get => _sensitivityX;
 		set => _sensitivityX = value;
 	}
+
 	public float SensitivityY
 	{
 		get => _sensitivityY;
@@ -95,6 +99,7 @@ public class GameManager : MonoBehaviour
 		_player = FindObjectOfType<PlayerController>();
 		_numberNotesRequired = FindObjectsOfType<PickUpNote>().Length;
 		_uiManager = FindObjectOfType<UIManager>();
+		_levelBuilder = FindObjectOfType<LevelBuilder>();
 	}
 
 	private void Awake()
